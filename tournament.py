@@ -162,10 +162,6 @@ def swissPairings():
     pairs = number_of_players / 2
     rounds =  int(math.log(number_of_players,2))
 
-    #print "ROUNDS: " + str(rounds) + ", players: " + str(number_of_players) + ", PAIRS: " + str(pairs)
-
-#[(116, 'Twilight Sparkle', 0, 0), (117, 'Fluttershy', 0, 0), (118, 'Applejack', 0, 0), (119, 'Pinkie Pie', 0, 0), (120, 'Rarity', 0, 0), (121, 'Rainbow Dash', 0, 0), (122, 'Princess Celestia', 0, 0), (123, 'Princess Luna', 0, 0)]
-
     conn = connect()
     c = conn.cursor()
     c.execute("select id, name from players ORDER BY rank DESC")
