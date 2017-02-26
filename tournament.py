@@ -37,7 +37,8 @@ def countPlayers():
     number_of_players = 0
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM players;")
+    SQL="SELECT COUNT(*) FROM players;"
+    c.execute(SQL)
     number_of_players = c.fetchone()
     conn.close()
     return number_of_players[0]
@@ -54,7 +55,9 @@ def registerPlayer(fullname):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players (name) VALUES (%s)", (fullname, ))
+    SQL="INSERT INTO players (name) VALUES (%s)"
+    params=((fullname, ))
+    c.execute(SQL, params )
     conn.commit()
     conn.close()
 
@@ -106,8 +109,9 @@ def rankPlayers():
         rank[row[0]] = wins - loss
 
     for key in rank:
-        c.execute("UPDATE players SET rank = %s \
-            WHERE id = %s", (rank[key], key, ))
+        SQL="UPDATE players SET rank = %s WHERE id = %s"
+        params=(rank[key], key, )
+        c.execute(SQL, params)
         conn.commit()
 
     conn.close()
@@ -120,8 +124,9 @@ def getWins(player_id):
     wins = 0
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM matches \
-        WHERE winner = (%s);", (player_id,))
+    SQL="SELECT COUNT(*) FROM matches WHERE winner = (%s);"
+    params=(player_id, )
+    c.execute(SQL, params)
     wins = c.fetchone()
     conn.close()
     return wins[0]
@@ -134,8 +139,9 @@ def getLosses(player_id):
     losses = 0
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM matches \
-        WHERE loser = (%s);", (player_id,))
+    SQL="SELECT COUNT(*) FROM matches WHERE loser = (%s);"
+    params=(player_id, )
+    c.execute(SQL, params )
     losses = c.fetchone()
     conn.close()
     return losses[0]
@@ -151,8 +157,9 @@ def reportMatch(winner, loser):
 
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO matches (winner, loser) \
-        VALUES (%s,%s)", (winner, loser, ))
+    SQL="INSERT INTO matches (winner, loser) VALUES (%s,%s)"
+    params=(winner, loser, )
+    c.execute(SQL, params)
     conn.commit()
     conn.close()
 
@@ -182,7 +189,8 @@ def swissPairings():
 
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT id, name FROM players ORDER BY rank DESC")
+    SQL="SELECT id, name FROM players ORDER BY rank DESC"
+    c.execute(SQL)
     results = c.fetchall()
 
     pair_count = 1
