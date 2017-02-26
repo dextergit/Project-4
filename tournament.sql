@@ -6,8 +6,6 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 
--- https://www.postgresql.org/docs/8.1/static/sql-droptable.html
-
 DROP TABLE IF EXISTS players CASCADE;
 DROP TABLE IF EXISTS matches CASCADE;
 
