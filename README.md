@@ -1,6 +1,10 @@
 # Project-4
 
-How to run: open a terminal window and run python tournament_test.py (which will run against tournament.py)
+How to run:
+
+* Open a terminal window
+* psql -f tournament.sql
+* python tournament_test.py # (which will run against tournament.py)
 
 Resources
 * Class materials, including starter tournament.py

@@ -6,36 +6,42 @@
 import psycopg2
 import math
 
+
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
+
     return psycopg2.connect("dbname=tournament")
+
 
 def deleteMatches():
     """Remove all the match records from the database."""
 
     conn = connect()
     c = conn.cursor()
-    c.execute("DELETE FROM matches;")
+    c.execute("TRUNCATE TABLE matches;")
     conn.commit()
     conn.close()
+
 
 def deletePlayers():
     """Remove all the player records from the database."""
     conn = connect()
     c = conn.cursor()
-    c.execute("DELETE FROM players")
+    c.execute("TRUNCATE TABLE players CASCADE;")
     conn.commit()
     conn.close()
 
+
 def countPlayers():
     """Returns the number of players currently registered."""
-    number_of_players = 0;
+    number_of_players = 0
     conn = connect()
     c = conn.cursor()
     c.execute("SELECT COUNT(*) FROM players;")
     number_of_players = c.fetchone()
     conn.close()
     return number_of_players[0]
+
 
 def registerPlayer(fullname):
     """Adds a player to the tournament database.
@@ -52,10 +58,12 @@ def registerPlayer(fullname):
     conn.commit()
     conn.close()
 
+
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
-    The first entry in the list should be the player in first place, or a player
+    The first entry in the list should
+    be the player in first place, or a player
     tied for first place if there is currently a tie.
 
     Returns:
@@ -82,6 +90,7 @@ def playerStandings():
     conn.close()
     return players
 
+
 def rankPlayers():
     # Rank players based on their wins and losses. Inputs: none. Outputs none.
 
@@ -97,32 +106,40 @@ def rankPlayers():
         rank[row[0]] = wins - loss
 
     for key in rank:
-        c.execute("UPDATE players SET rank = %s WHERE id = %s", (rank[key], key, ))
+        c.execute("UPDATE players SET rank = %s \
+            WHERE id = %s", (rank[key], key, ))
         conn.commit()
 
     conn.close()
 
-def getWins(player_id):
-    # Gets the number of total wins by player. Inputs: player ID. Ouput: number of wins.
 
-    wins = 0;
+def getWins(player_id):
+    # Gets the number of total wins by player.
+    # Inputs: player ID. Ouput: number of wins.
+
+    wins = 0
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM matches WHERE winner = (%s);", (player_id,))
+    c.execute("SELECT COUNT(*) FROM matches \
+        WHERE winner = (%s);", (player_id,))
     wins = c.fetchone()
     conn.close()
     return wins[0]
 
-def getLosses(player_id):
-    # Gets the number of total losses by player. Inputs: player ID. Output: number of losses.
 
-    losses = 0;
+def getLosses(player_id):
+    # Gets the number of total losses by player.
+    # Inputs: player ID. Output: number of losses.
+
+    losses = 0
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM matches WHERE loser = (%s);", (player_id,))
+    c.execute("SELECT COUNT(*) FROM matches \
+        WHERE loser = (%s);", (player_id,))
     losses = c.fetchone()
     conn.close()
     return losses[0]
+
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -134,9 +151,11 @@ def reportMatch(winner, loser):
 
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO matches (winner, loser) VALUES (%s,%s)", (winner, loser, ))
+    c.execute("INSERT INTO matches (winner, loser) \
+        VALUES (%s,%s)", (winner, loser, ))
     conn.commit()
     conn.close()
+
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -159,7 +178,7 @@ def swissPairings():
     pairings = []
     number_of_players = countPlayers()
     pairs = number_of_players / 2
-    rounds =  int(math.log(number_of_players,2))
+    rounds = int(math.log(number_of_players, 2))
 
     conn = connect()
     c = conn.cursor()
@@ -170,10 +189,10 @@ def swissPairings():
     pair_index = 0
 
     while (pair_count <= pairs):
-       player1 = results[pair_index]
-       player2 = results[pair_index + 1]
-       pair_index += 2
-       pair_count += 1
-       pairings.append((player1[0], player1[1], player2[0], player2[1]))
+        player1 = results[pair_index]
+        player2 = results[pair_index + 1]
+        pair_index += 2
+        pair_count += 1
+        pairings.append((player1[0], player1[1], player2[0], player2[1]))
 
     return pairings
