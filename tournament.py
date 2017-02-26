@@ -6,13 +6,13 @@
 import psycopg2
 import math
 
-
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=tournament")
 
 def deleteMatches():
     """Remove all the match records from the database."""
+
     conn = connect()
     c = conn.cursor()
     c.execute("DELETE FROM matches;")
@@ -79,7 +79,6 @@ def playerStandings():
         loss = getLosses(row[0])
         players.append((row[0], row[1], int(wins), int(loss) + int(wins)))
 
-    print players
     conn.close()
     return players
 
@@ -164,32 +163,11 @@ def swissPairings():
     i = 1
     index = 0
     while (i <= pairs):
-       #print 'The count is:', i
-
        p1 = results[index]
        p2 = results[index + 1]
        index = index + 2
-       #print(str(p1) + ", " + str(p2))
-       i +=1
+       i += 1
 
        pairings.append((p1[0], p1[1], p2[0], p2[1]))
 
-    print(pairings)
     return pairings
-
-       #
-    #    results.pop(0)
-    #    results.pop(1)
-
-    # print results
-    # results.pop(0)
-    # print results
-    # print results[0]
-
-    # i=0;
-    # for row in results:
-    #     print(row)
-    #     i += 1
-    #     if i == pairs:
-    #         print "reached"
-    #         i=0
