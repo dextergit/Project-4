@@ -10,6 +10,7 @@
 # https://www.w3schools.com/sql/sql_join_full.asp
 
 import psycopg2
+import math
 
 
 def connect():
@@ -37,10 +38,10 @@ def countPlayers():
     number_of_players = 0;
     conn = connect()
     c = conn.cursor()
-    results = c.execute("SELECT COUNT(*) FROM players;")
+    c.execute("SELECT COUNT(*) FROM players;")
     number_of_players = c.fetchone()
-    return number_of_players[0]
     conn.close()
+    return number_of_players[0]
 
 def registerPlayer(fullname):
     """Adds a player to the tournament database.
@@ -71,28 +72,58 @@ def playerStandings():
         matches: the number of matches the player has played
     """
 
-    # d = {}
-    # d['dict1'] = {}
-    # d['dict1']['innerkey'] = 'value'
-
     players = []
+    rankPlayers()
 
     conn = connect()
     c = conn.cursor()
-    c.execute("select id, name from players")
+    c.execute("select id, name from players ORDER BY rank DESC")
     results = c.fetchall()
-    print "hello"
+
     for row in results:
-        # players[row[0]] = {}
-        # players[row[0]]['name'] = row[1]
-        # players[row[0]]['wins'] = 1
-        # players[row[0]]['matches'] = 2
-        print "hello 1"
-        players.append((row[0], row[1], 0, 0))
+        wins = getWins(row[0])
+        loss = getLosses(row[0])
+        players.append((row[0], row[1], int(wins), int(loss) + int(wins)))
 
     print players
     conn.close()
     return players
+
+def rankPlayers():
+    rank = {}
+    conn = connect()
+    c = conn.cursor()
+    c.execute("select id from players")
+    results = c.fetchall()
+
+    for row in results:
+        wins = getWins(row[0])
+        loss = getLosses(row[0])
+        rank[row[0]] = wins - loss
+
+    for key in rank:
+        c.execute("UPDATE players SET rank = %s WHERE id = %s", (rank[key], key, ))
+        conn.commit()
+
+    conn.close()
+
+def getWins(player_id):
+    wins = 0;
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM matches WHERE winner = (%s);", (player_id,))
+    wins = c.fetchone()
+    conn.close()
+    return wins[0]
+
+def getLosses(player_id):
+    losses = 0;
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM matches WHERE loser = (%s);", (player_id,))
+    losses = c.fetchone()
+    conn.close()
+    return losses[0]
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -102,6 +133,11 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
 
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO matches (winner, loser) VALUES (%s,%s)", (winner, loser, ))
+    conn.commit()
+    conn.close()
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -118,3 +154,52 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+
+    rankPlayers()
+
+    pairings = []
+    number_of_players = countPlayers()
+    pairs = number_of_players / 2
+    rounds =  int(math.log(number_of_players,2))
+
+    #print "ROUNDS: " + str(rounds) + ", players: " + str(number_of_players) + ", PAIRS: " + str(pairs)
+
+#[(116, 'Twilight Sparkle', 0, 0), (117, 'Fluttershy', 0, 0), (118, 'Applejack', 0, 0), (119, 'Pinkie Pie', 0, 0), (120, 'Rarity', 0, 0), (121, 'Rainbow Dash', 0, 0), (122, 'Princess Celestia', 0, 0), (123, 'Princess Luna', 0, 0)]
+
+    conn = connect()
+    c = conn.cursor()
+    c.execute("select id, name from players ORDER BY rank DESC")
+    results = c.fetchall()
+
+    i = 1
+    index = 0
+    while (i <= pairs):
+       #print 'The count is:', i
+
+       p1 = results[index]
+       p2 = results[index + 1]
+       index = index + 2
+       #print(str(p1) + ", " + str(p2))
+       i +=1
+
+       pairings.append((p1[0], p1[1], p2[0], p2[1]))
+
+    print(pairings)
+    return pairings
+
+       #
+    #    results.pop(0)
+    #    results.pop(1)
+
+    # print results
+    # results.pop(0)
+    # print results
+    # print results[0]
+
+    # i=0;
+    # for row in results:
+    #     print(row)
+    #     i += 1
+    #     if i == pairs:
+    #         print "reached"
+    #         i=0
