@@ -7,14 +7,7 @@
 -- these lines here.
 
 DROP TABLE IF EXISTS players CASCADE;
-DROP TABLE IF EXISTS matches CASCADE;
-
+DROP TABLE IF EXISTS matches;
 
 CREATE TABLE players (id SERIAL PRIMARY KEY, name VARCHAR(40), rank integer, UNIQUE (id, name));
 CREATE TABLE matches (id SERIAL PRIMARY KEY, winner integer references players(id), loser integer references players(id))
-
--- insert into players (name) values ('joe1');
--- insert into players (name) values ('joe2');
--- insert into players (name) values ('joe3');
--- insert into players (name) values ('joe4');
--- insert into players (name) values ('joe5');

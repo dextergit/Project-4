@@ -83,6 +83,8 @@ def playerStandings():
     return players
 
 def rankPlayers():
+    # Rank players based on their wins and losses. Inputs: none. Outputs none.
+
     rank = {}
     conn = connect()
     c = conn.cursor()
@@ -101,6 +103,8 @@ def rankPlayers():
     conn.close()
 
 def getWins(player_id):
+    # Gets the number of total wins by player. Inputs: player ID. Ouput: number of wins.
+
     wins = 0;
     conn = connect()
     c = conn.cursor()
@@ -110,6 +114,8 @@ def getWins(player_id):
     return wins[0]
 
 def getLosses(player_id):
+    # Gets the number of total losses by player. Inputs: player ID. Output: number of losses.
+
     losses = 0;
     conn = connect()
     c = conn.cursor()
@@ -157,7 +163,7 @@ def swissPairings():
 
     conn = connect()
     c = conn.cursor()
-    c.execute("select id, name from players ORDER BY rank DESC")
+    c.execute("SELECT id, name FROM players ORDER BY rank DESC")
     results = c.fetchall()
 
     i = 1
