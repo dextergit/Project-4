@@ -170,10 +170,10 @@ def swissPairings():
     pair_index = 0
 
     while (pair_count <= pairs):
-       p1 = results[pair_count]
-       p2 = results[pair_index + 1]
+       player1 = results[pair_index]
+       player2 = results[pair_index + 1]
        pair_index += 2
        pair_count += 1
-       pairings.append((p1[0], p1[1], p2[0], p2[1]))
+       pairings.append((player1[0], player1[1], player2[0], player2[1]))
 
     return pairings
