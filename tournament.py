@@ -166,14 +166,14 @@ def swissPairings():
     c.execute("SELECT id, name FROM players ORDER BY rank DESC")
     results = c.fetchall()
 
-    i = 1
-    index = 0
-    while (i <= pairs):
-       p1 = results[index]
-       p2 = results[index + 1]
-       index = index + 2
-       i += 1
+    pair_count = 1
+    pair_index = 0
 
+    while (pair_count <= pairs):
+       p1 = results[pair_count]
+       p2 = results[pair_index + 1]
+       pair_index += 2
+       pair_count += 1
        pairings.append((p1[0], p1[1], p2[0], p2[1]))
 
     return pairings
