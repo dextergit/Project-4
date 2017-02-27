@@ -22,7 +22,6 @@ def deleteMatches():
     conn.commit()
     conn.close()
 
-
 def deletePlayers():
     """Remove all the player records from the database."""
     conn = connect()
@@ -78,73 +77,17 @@ def playerStandings():
     """
 
     players = []
-    rankPlayers()
 
     conn = connect()
     c = conn.cursor()
-    c.execute("select id, name from players ORDER BY rank DESC")
+    c.execute("SELECT * FROM rank ORDER BY wins DESC;")
     results = c.fetchall()
 
     for row in results:
-        wins = getWins(row[0])
-        loss = getLosses(row[0])
-        players.append((row[0], row[1], int(wins), int(loss) + int(wins)))
+        players.append((row[0], row[1], row[3], row[2]))
 
     conn.close()
     return players
-
-
-def rankPlayers():
-    # Rank players based on their wins and losses. Inputs: none. Outputs none.
-
-    rank = {}
-    conn = connect()
-    c = conn.cursor()
-    c.execute("select id from players")
-    results = c.fetchall()
-
-    for row in results:
-        wins = getWins(row[0])
-        loss = getLosses(row[0])
-        rank[row[0]] = wins - loss
-
-    for key in rank:
-        SQL="UPDATE players SET rank = %s WHERE id = %s"
-        params=(rank[key], key, )
-        c.execute(SQL, params)
-        conn.commit()
-
-    conn.close()
-
-
-def getWins(player_id):
-    # Gets the number of total wins by player.
-    # Inputs: player ID. Ouput: number of wins.
-
-    wins = 0
-    conn = connect()
-    c = conn.cursor()
-    SQL="SELECT COUNT(*) FROM matches WHERE winner = (%s);"
-    params=(player_id, )
-    c.execute(SQL, params)
-    wins = c.fetchone()
-    conn.close()
-    return wins[0]
-
-
-def getLosses(player_id):
-    # Gets the number of total losses by player.
-    # Inputs: player ID. Output: number of losses.
-
-    losses = 0
-    conn = connect()
-    c = conn.cursor()
-    SQL="SELECT COUNT(*) FROM matches WHERE loser = (%s);"
-    params=(player_id, )
-    c.execute(SQL, params )
-    losses = c.fetchone()
-    conn.close()
-    return losses[0]
 
 
 def reportMatch(winner, loser):
@@ -157,7 +100,7 @@ def reportMatch(winner, loser):
 
     conn = connect()
     c = conn.cursor()
-    SQL="INSERT INTO matches (winner, loser) VALUES (%s,%s)"
+    SQL="INSERT INTO matches (winner, loser) VALUES (%s, %s)"
     params=(winner, loser, )
     c.execute(SQL, params)
     conn.commit()
@@ -180,8 +123,6 @@ def swissPairings():
         name2: the second player's name
     """
 
-    rankPlayers()
-
     pairings = []
     number_of_players = countPlayers()
     pairs = number_of_players / 2
@@ -189,7 +130,7 @@ def swissPairings():
 
     conn = connect()
     c = conn.cursor()
-    SQL="SELECT id, name FROM players ORDER BY rank DESC"
+    SQL="SELECT id, name FROM rank ORDER BY wins DESC;"
     c.execute(SQL)
     results = c.fetchall()
 
