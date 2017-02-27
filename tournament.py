@@ -22,6 +22,7 @@ def deleteMatches():
     conn.commit()
     conn.close()
 
+
 def deletePlayers():
     """Remove all the player records from the database."""
     conn = connect()
@@ -36,7 +37,7 @@ def countPlayers():
     number_of_players = 0
     conn = connect()
     c = conn.cursor()
-    SQL="SELECT COUNT(*) FROM players;"
+    SQL = "SELECT COUNT(*) FROM players;"
     c.execute(SQL)
     number_of_players = c.fetchone()
     conn.close()
@@ -54,9 +55,9 @@ def registerPlayer(fullname):
     """
     conn = connect()
     c = conn.cursor()
-    SQL="INSERT INTO players (name) VALUES (%s)"
-    params=((fullname, ))
-    c.execute(SQL, params )
+    SQL = "INSERT INTO players (name) VALUES (%s)"
+    params = ((fullname,))
+    c.execute(SQL, params)
     conn.commit()
     conn.close()
 
@@ -100,8 +101,8 @@ def reportMatch(winner, loser):
 
     conn = connect()
     c = conn.cursor()
-    SQL="INSERT INTO matches (winner, loser) VALUES (%s, %s)"
-    params=(winner, loser, )
+    SQL = "INSERT INTO matches (winner, loser) VALUES (%s, %s)"
+    params = (winner, loser,)
     c.execute(SQL, params)
     conn.commit()
     conn.close()
@@ -130,7 +131,7 @@ def swissPairings():
 
     conn = connect()
     c = conn.cursor()
-    SQL="SELECT id, name FROM rank ORDER BY wins DESC;"
+    SQL = "SELECT id, name FROM rank ORDER BY wins DESC;"
     c.execute(SQL)
     results = c.fetchall()
 
