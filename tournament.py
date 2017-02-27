@@ -129,11 +129,13 @@ def swissPairings():
     pairs = number_of_players / 2
     rounds = int(math.log(number_of_players, 2))
 
-    conn = connect()
-    c = conn.cursor()
-    SQL = "SELECT id, name FROM rank ORDER BY wins DESC;"
-    c.execute(SQL)
-    results = c.fetchall()
+    # conn = connect()
+    # c = conn.cursor()
+    # SQL = "SELECT id, name FROM rank ORDER BY wins DESC;"
+    # c.execute(SQL)
+    # results = c.fetchall()
+
+    results = playerStandings()
 
     pair_count = 1
     pair_index = 0
