@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS matches;
 DROP VIEW if EXISTS standings;
 
 -- Tables
-CREATE TABLE players (id SERIAL PRIMARY KEY, name VARCHAR(40), rank integer, UNIQUE (id, name));
+CREATE TABLE players (id SERIAL PRIMARY KEY, name VARCHAR(40), UNIQUE (id, name));
 CREATE TABLE matches (id SERIAL PRIMARY KEY, winner integer references players(id), loser integer references players(id))
 
 -- Views
